@@ -15,7 +15,7 @@ import os, re
 import dj_database_url ## Connection with the DB. See heroku's help
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
 
 # Quick-start development settings - unsuitable for production
@@ -70,7 +70,7 @@ ROOT_URLCONF = 'borgia.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')]
+        'DIRS': [os.path.join(PROJECT_ROOT, 'templates')]
         ,
         'APP_DIRS': True,
         'OPTIONS': {
@@ -171,17 +171,17 @@ LOGIN_EXEMPT_URL_PATTERNS = [
 
 STATIC_URL = '/static/'
 # STATIC_ROOT = 'static/static_root/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static', 'static_root')
+STATIC_ROOT = os.path.join(PROJECT_ROOT, 'static', 'static_root')
 STATICFILES_DIRS = (
     # 'static/static_dirs/',
-    os.path.join(BASE_DIR, 'static', 'static_dirs'),
+    os.path.join(PROJECT_ROOT, 'static', 'static_dirs'),
 )
 
 # The line below tel static-precompiler to compile in static_dirs. NEED TO BE CHANGED IN PRODUCTION TO STATIC_ROOT
-STATIC_PRECOMPILER_ROOT = os.path.join(BASE_DIR, 'static', 'static_dirs')
+STATIC_PRECOMPILER_ROOT = os.path.join(PROJECT_ROOT, 'static', 'static_dirs')
 
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'static', 'media')
+MEDIA_ROOT = os.path.join(PROJECT_ROOT, 'static', 'media')
 MEDIA_URL = '/media/'
 
 # Simplified static file serving.
