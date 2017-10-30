@@ -435,7 +435,7 @@ borgia.sql
 borgia_nginx.conf
 borgia_uwsgi.ini
 uwsgi_params
-wsgi.py
+#wsgi.py
 borgia.sock
 borgia.wsgi
 borgia_nginx.conf.save
