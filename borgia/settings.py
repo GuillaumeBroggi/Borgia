@@ -15,6 +15,7 @@ import os, re
 import dj_database_url ## Connection with the DB. See heroku's help
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
 
@@ -27,8 +28,6 @@ SECRET_KEY = 'd8!^$6uved6+1d)iiqwhf5q8ao3*z)ykfdff3&zi4@i7pv#jzd'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['*']  # 'www.borgia.iresam.org' en prod, '*' pour une simulation de prod en local.
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -37,7 +36,11 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
+    # Disable Django's own staticfiles handling in favour of WhiteNoise, for
+    # greater consistency between gunicorn and `./manage.py runserver`. See:
+    # http://whitenoise.evans.io/en/stable/django.html#using-whitenoise-in-development
     'bootstrapform',
     'users',
     'shops',
@@ -70,8 +73,7 @@ ROOT_URLCONF = 'borgia.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(PROJECT_ROOT, 'templates')]
-        ,
+        'DIRS': [os.path.join(PROJECT_ROOT, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -81,6 +83,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'notifications.context_processors.notifications'
             ],
+            'debug': DEBUG,
             # Permet de rajouter extra à la
             'builtins': ['users.templatetags.users_extra']
         },
@@ -91,10 +94,16 @@ WSGI_APPLICATION = 'borgia.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/1.9/ref/settings/#databases
+# https://docs.djangoproject.com/en/1.11/ref/settings/#databases
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
+}
 
 
-DATABASES['default'] = dj_database_url.config(conn_max_age=600)
 
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
@@ -127,14 +136,19 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
 
 LANGUAGE_CODE = 'fr-fr'
-
 TIME_ZONE = 'Europe/Paris'
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
+
+# Change 'default' database configuration with $DATABASE_URL.
+DATABASES['default'].update(dj_database_url.config(conn_max_age=500))
+
+# Honor the 'X-Forwarded-Proto' header for request.is_secure()
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Allow all host headers
+ALLOWED_HOSTS = ['*']
 
 
 # Static files (CSS, JavaScript, Images)
@@ -170,14 +184,20 @@ LOGIN_EXEMPT_URL_PATTERNS = [
     ]
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.9/howto/static-files/
-STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles', 'static_root')
+# https://docs.djangoproject.com/en/1.11/howto/static-files/
+
+STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
 STATIC_URL = '/static/'
 
 # Extra places for collectstatic to find static files.
-STATICFILES_DIRS = (
-    os.path.join(PROJECT_ROOT, 'static', 'static_dirs'),
-)
+STATICFILES_DIRS = [
+    os.path.join(PROJECT_ROOT, 'static'),
+]
+
+# Simplified static file serving.
+# https://warehouse.python.org/project/whitenoise/
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 
 
 # The line below tel static-precompiler to compile in static_dirs. NEED TO BE CHANGED IN PRODUCTION TO STATIC_ROOT
@@ -186,11 +206,6 @@ STATIC_PRECOMPILER_ROOT = os.path.join(PROJECT_ROOT, 'static', 'static_dirs')
 
 MEDIA_ROOT = os.path.join(PROJECT_ROOT, 'static', 'media')
 MEDIA_URL = '/media/'
-
-# Simplified static file serving.
-# https://warehouse.python.org/project/whitenoise/
-
-STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 
 
 # Lydia
