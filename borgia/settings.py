@@ -169,13 +169,16 @@ LOGIN_EXEMPT_URL_PATTERNS = [
     re.compile('^%s.+$' % ('/static/media/img/'))
     ]
 
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/1.9/howto/static-files/
+STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles', 'static_root')
 STATIC_URL = '/static/'
-# STATIC_ROOT = 'static/static_root/'
-STATIC_ROOT = os.path.join(PROJECT_ROOT, 'static', 'static_root')
+
+# Extra places for collectstatic to find static files.
 STATICFILES_DIRS = (
-    # 'static/static_dirs/',
     os.path.join(PROJECT_ROOT, 'static', 'static_dirs'),
 )
+
 
 # The line below tel static-precompiler to compile in static_dirs. NEED TO BE CHANGED IN PRODUCTION TO STATIC_ROOT
 STATIC_PRECOMPILER_ROOT = os.path.join(PROJECT_ROOT, 'static', 'static_dirs')
