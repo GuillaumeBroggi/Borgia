@@ -3,6 +3,7 @@ Fork of Borgia-app repo. Demo Version
 
 ## Get started : initial commands
 
+Bootstrap vas __pour l'instant__ mieux avec less. (Cela changera avec bootstrap 4)
 * S'assurer que LESS est installé (avec ``npm install -g less``)
 
 * Charger les db et dumps :
