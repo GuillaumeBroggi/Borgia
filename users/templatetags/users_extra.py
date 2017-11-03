@@ -66,11 +66,11 @@ def center_name():
 def set_template(template):
     default_template = getattr(settings, "DEFAULT_TEMPLATE", None)
     if template:
-        return 'less/_bootstrap-' + template + '.less'
+        return 'less/bootstrap-' + template + '.less'
     elif default_template:
-        return 'less/_bootstrap-' + default_template + '.less'
+        return 'less/bootstrap-' + default_template + '.less'
     else:
-        return 'less/_bootstrap-light.less'
+        return 'less/bootstrap-light.less'
 
 @register.simple_tag
 def set_brand(template):

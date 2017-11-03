@@ -1,5 +1,5 @@
 {% load compile_static %}
-{% load staticfiles %}
+{% load static %}
 {% load notifications_extra %}
 {% load users_extra %}
 {% load bootstrap %}
@@ -16,6 +16,7 @@
     </title>
     <link href="https://fonts.googleapis.com/css?family=Lato|Roboto" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/font-awesome.min.css' %}"/>
+
     {% set_template request.user.theme as template %}
     <link rel="stylesheet" href="{% static template|compile %}" />
 
