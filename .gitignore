@@ -441,4 +441,4 @@ borgia.wsgi
 borgia_nginx.conf.save
 
 # Migrations
-*/migrations
+#*/migrations Removed for heroku
