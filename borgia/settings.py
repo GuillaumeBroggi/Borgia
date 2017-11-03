@@ -194,9 +194,6 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static', 'static_dirs'),
 ]
 
-# Simplified static file serving.
-# https://warehouse.python.org/project/whitenoise/
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
