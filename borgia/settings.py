@@ -195,12 +195,12 @@ STATICFILES_DIRS = [
 ]
 
 
-STATICFILES_FINDERS = (
-    'django.contrib.staticfiles.finders.FileSystemFinder',
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    # other finders..
-    'static_precompiler.finders.StaticPrecompilerFinder',
-)
+# STATICFILES_FINDERS = (
+#     'django.contrib.staticfiles.finders.FileSystemFinder',
+#     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+#     # other finders..
+#     'static_precompiler.finders.StaticPrecompilerFinder',
+# )
 
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static', 'media')
