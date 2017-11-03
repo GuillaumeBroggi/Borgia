@@ -201,7 +201,7 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
 # The line below tel static-precompiler to compile in static_dirs. NEED TO BE CHANGED IN PRODUCTION TO STATIC_ROOT
-STATIC_PRECOMPILER_ROOT = os.path.join(BASE_DIR, 'static', 'static_root')
+STATIC_PRECOMPILER_ROOT = STATIC_ROOT
 
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static', 'media')
