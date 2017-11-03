@@ -1,6 +1,6 @@
 {
-  "name": "Borgia-demo",
-  "version": "4.1.0",
+  "name": "borgia-demo",
+  "version": "4.3.0",
   "author": "Borgia-app",
   "dependencies": {
     "less": "^2.7.2"
