@@ -164,14 +164,14 @@ class User(AbstractUser):
 
     def forecast_balance(self):
       # Get all undone shared events where user is involved as participant
-      shared_events = SharedEvent.objects.filter(participants__username__contains= self.username, done=False)
+      shared_events = SharedEvent.objects.filter(users__username__contains= self.username, done=False)
       solde_prev = 0
       for se in shared_events:
         solde_prev += se.get_price_of_user(self)
       self.virtual_balance = self.balance - solde_prev
 	  #TODO: notify if forecast balance is negative
       self.save()
-		 
+
     def year_pg(self):
         """
         Return the promotion's year of the user, under the Gadz'Art standard.
@@ -239,12 +239,12 @@ class User(AbstractUser):
 
         :returns: list of objects
         """
-        # TODO; shared event
+
         sales = Sale.objects.filter(sender=self)
         transferts = Transfert.objects.filter(Q(sender=self) | Q(recipient=self))
         rechargings = Recharging.objects.filter(sender=self)
         exceptionnal_movements = ExceptionnalMovement.objects.filter(recipient=self)
-        shared_events = SharedEvent.objects.filter(participants=self)
+        shared_events = SharedEvent.objects.filter(done=True, users=self)
         for e in shared_events:
             e.amount = e.get_price_of_user(self)
 
@@ -310,7 +310,7 @@ def list_year():
     :returns: list of integer years used by users, sorted the decreasing dates.
     """
     list_year = []
-    for u in User.objects.all().exclude(groups=9):
+    for u in User.objects.all().exclude(groups=6).exclude(pk=1): # Parmis tout les users moins les gadz d'honn'ss et l'admin
         if u.year not in list_year:
             if u.year is not None:  # year is not mandatory
                 list_year.append(u.year)

@@ -37,7 +37,7 @@
       </tr>
       <tr{% if not object.is_manual %} class="success" {% endif %}>
         <td>Automatique (marge {% if margin_profit %}{{ margin_profit }}%{% else %}non définie{% endif %})</td>
-        <td>{{ object.calculated_price_usual }} €</td>
+        <td>{{ object.get_automatic_price }} €</td>
       {% if object.type == 'container' %}
           <td>{{ object.set_calculated_price_mean }} €</td>
       {% endif %}
@@ -45,7 +45,7 @@
       </tr>
       <tr{% if object.is_manual %} class="success" {% endif %}>
         <td>Manuel</td>
-        <td>{{ object.manual_price_usual }} €<span class="changed_price"> <i class="fa fa-long-arrow-right"></i> <span id="new_price_usual"></span> €</span></td>
+        <td>{{ object.manual_price }} €<span class="changed_price"> <i class="fa fa-long-arrow-right"></i> <span id="new_price_usual"></span> €</span></td>
         {% if object.type == 'container' %}
             <td>{{ object.manual_price }} €<span class="changed_price"> <i class="fa fa-long-arrow-right"></i> <span id="new_price_container"></span> €</span></td>
         {% endif %}
@@ -65,7 +65,7 @@
         {% else %}
             $("#new_price_usual").text(String(Math.round(this.value*100)/100).replace('.', ','));
         {% endif %}
-        var new_deviating_price = Math.round((this.value - Number("{{ object.set_calculated_price_mean }}".replace(',', '.'))) / Number("{{ object.set_calculated_price_mean }}".replace(',', '.'))*100);
+        var new_deviating_price = Math.round((this.value - Number("{{ object.get_automatic_price }}".replace(',', '.'))) / Number("{{ object.get_automatic_price }}".replace(',', '.'))*100);
         $("#new_deviating_price").text(String(new_deviating_price).replace('.', ','));
     });
 </script>

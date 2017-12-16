@@ -1,4 +1,5 @@
 import re
+import datetime
 
 from django import forms
 from django.contrib.auth import authenticate
@@ -11,6 +12,7 @@ from users.models import User
 from shops.models import Shop
 from finances.models import BankAccount
 from borgia.validators import *
+from users.models import list_year
 
 
 class BankAccountCreateForm(forms.ModelForm):
@@ -229,18 +231,15 @@ class SelfLydiaCreateForm(forms.Form):
                 ])
 
 
-
-
-
-
-
-
-
-
-
-
-
-
+class SharedEventListForm(forms.Form):
+    date_begin = forms.DateField(label="Depuis", required=False, initial= datetime.date.today(),
+                                    widget=forms.DateInput(attrs={'class': 'datepicker'})
+                                )
+    date_end = forms.DateField(label="Jusqu'à", required=False, widget=forms.DateInput(attrs={'class': 'datepicker'}))
+    done = forms.ChoiceField(label="Etat", choices=(("not_done", 'En cours'), ("done", 'Terminé'), ("both", 'Les deux')),
+                                initial=("not_done", 'En cours')
+                            )
+    order_by = forms.ChoiceField(label="Trier par", choices=(('-date', 'Date'), ('manager', 'Opérateur')))
 
 
 class SharedEventCreateForm(forms.Form):
@@ -249,69 +248,65 @@ class SharedEventCreateForm(forms.Form):
     price = forms.DecimalField(label='Prix total (vide si pas encore connu)', decimal_places=2, max_digits=9,
                                required=False, min_value=0)
     bills = forms.CharField(label='Factures liées (vide si pas encore connu)', required=False)
-
-
-class SharedEventManageListForm(forms.Form):
-    date_begin = forms.DateField(label='De', required=False, widget=forms.DateInput(attrs={'class': 'datepicker'}))
-    date_end = forms.DateField(label='A', required=False, widget=forms.DateInput(attrs={'class': 'datepicker'}))
-    all = forms.BooleanField(required=False, label='Depuis toujours')
-    done = forms.ChoiceField(label='Etat', choices=((True, 'Terminé'), (False, 'En cours'), ('both', 'Les deux')))
-    order_by = forms.ChoiceField(label='Trier par', choices=(('-date', 'Date'), ('manager', 'Opérateur')))
-
-
-class SharedEventManageUserListForm(forms.Form):
-    order_by = forms.ChoiceField(label='Trier par', choices=(('last_name', 'Nom'), ('surname', 'Bucque')))
-    state = forms.ChoiceField(label='Lister les', choices=(('registered', 'Inscrits'), ('participants', 'Participants')))
-
-
-class SharedEventManageUploadJSONForm(forms.Form):
-    file = forms.FileField(label='Fichier de données')
-    state = forms.ChoiceField(
-        label='Etat',
-        choices=(('registered', 'Inscrit'), ('participants', 'Participant')))
+    allow_self_registeration = forms.BooleanField(label='Autoriser la self préinscription', initial=True, required=False)
+    date_end_registration = forms.DateField(    label='Date de fin de self-préinscription (Si pas autorisé laisser vide)',
+                                                required=False,
+                                                widget=forms.DateInput(attrs={'class': 'datepicker'})
+                                            )
 
 
 class SharedEventFinishForm(forms.Form):
     remark = forms.CharField(label='Pourquoi finir l\'événement ?')
 
 
-class SharedEventManageUpdateForm(forms.Form):
+class SharedEventUpdateForm(forms.Form):
     price = forms.DecimalField(label='Prix total (€)', decimal_places=2, max_digits=9, min_value=0, required=False)
     bills = forms.CharField(label='Factures liées', required=False)
+    allow_self_registeration = forms.BooleanField(label='Autoriser la préinscription', required=False)
 
 
-class SharedEventManageAddForm(forms.Form):
+class SharedEventListUsersForm(forms.Form):
+    order_by = forms.ChoiceField(label='Trier par', choices=(('username', 'Username'), ('last_name', 'Nom'), ('surname', 'Bucque')))
+    state = forms.ChoiceField(label='Lister les', choices=(('users', 'Tous les concernés'),
+                                                ('registrants', 'Uniquement les préinscrit'),
+                                                ('participants', 'Uniquement les participant')))
+
+
+class SharedEventSelfRegistrationForm(forms.Form):
+    weight = forms.IntegerField(label='Pondération', min_value=0)
+
+
+class SharedEventAddWeightForm(forms.Form):
     username = forms.CharField(label='Username', widget=forms.TextInput(attrs={'class': 'autocomplete_username'}),
                                validators=[autocomplete_username_validator])
-    state = forms.ChoiceField(choices=(('registered', 'Inscrit'), ('participant', 'Participant')))
-    ponderation = forms.IntegerField(label='Pondération', min_value=0, required=False)
-
-    def clean_ponderation(self):
-        data = self.cleaned_data['ponderation']
-
-        if self.cleaned_data['state'] == 'participant':
-            if data == '':
-                raise ValidationError('Obligatoire')
-
-        return data
+    state = forms.ChoiceField(choices=(('registered', 'Préinscrit'), ('participant', 'Participant')))
+    weight = forms.IntegerField(label='Pondération', min_value=0, required=True, initial=1)
 
 
-class SharedEventManageDownloadXlsxForm(forms.Form):
+class SharedEventDownloadXlsxForm(forms.Form):
     state = forms.ChoiceField(label='Selection',
-                              choices=(('year', 'Listes de promotions'), ('registered', 'Inscrits'),
+                              choices=(('year', 'Listes de promotions'), ('registrants', 'Préinscrit'),
                                        ('participants', 'Participants')))
 
-    def __init__(self, *args, **kwargs):
-        list_year = kwargs.pop('list_year')
-        super(SharedEventManageDownloadXlsxForm, self).__init__(*args, **kwargs)
+    def __init__(self, **kwargs):
+        super(SharedEventDownloadXlsxForm, self).__init__(**kwargs)
+        YEAR_CHOICES = []
+        for year in list_year():
+            YEAR_CHOICES.append(
+                (year, year)
+            )
+        self.fields['years'] = forms.MultipleChoiceField(
+            label='Année à inclure ',
+            choices=YEAR_CHOICES,
+            required=False
+        )
 
-        for (i, y) in enumerate(list_year):
-            self.fields['field_year_%s' % i] = forms.BooleanField(label=y, required=False)
 
-    def year_pg_list_answers(self):
-        for name, value in self.cleaned_data.items():
-            if name.startwith('field_year_pg_'):
-                yield (self.fields[name].label, value)
+class SharedEventUploadXlsxForm(forms.Form):
+    list_user = forms.FileField(label='Fichier de données')
+    state = forms.ChoiceField(
+        label='Liste de ',
+        choices=(('registrants', 'Préinscrits'), ('participants', 'Participants')))
 
 
 class SetPriceProductBaseForm(forms.Form):
