@@ -50,7 +50,11 @@ Or Django (et donc Borgia) fonctionnent avec la version 3. Pour les difféfentes
 
  Le sous-dossier less/less contient les fichiers originaux de bootstrap non-modifiés.
 
- Le fichier LESS est compilé dans static_dirs actuellement. __En prod, il faut changer le setting correspondant.__
+  #### COMPILATION DES FICHIERS LESS ####
+ from static_precompiler.utils import compile_static
+ compile_static(static/less/bootstrap-birse.less)
+ compile_static(os.path.join(BASE_DIR, 'static', 'less', 'bootstrap-light.less'))
+ compile_static(os.path.join(BASE_DIR, 'static', 'less', 'bootstrap-dark.less'))
 
 
 ## SharedEvent - TODO List :

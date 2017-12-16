@@ -36,11 +36,8 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    #'whitenoise.runserver_nostatic',
+    'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
-    # Disable Django's own staticfiles handling in favour of WhiteNoise, for
-    # greater consistency between gunicorn and `./manage.py runserver`. See:
-    # http://whitenoise.evans.io/en/stable/django.html#using-whitenoise-in-development
     'bootstrapform',
     'users',
     'shops',
@@ -49,8 +46,8 @@ INSTALLED_APPS = [
     'settings_data',
     'modules',
     'stocks',
-    'graphene_django',
-	'static_precompiler'
+	'static_precompiler',
+    'graphene_django'
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -186,8 +183,9 @@ LOGIN_EXEMPT_URL_PATTERNS = [
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'static', 'static_root')
 STATIC_URL = '/static/'
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Extra places for collectstatic to find static files.
 STATICFILES_DIRS = [
@@ -227,7 +225,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # Electrovanne
 ARDUINO_PRIVATE = '80eg11TBAiR13UCI3dJKHWa5e7764KA3'
 
-ADMINS = [('Alexandre', 'a-palo@laposte.net'), ('Guillaume', 'guillaume@broggi.ovh'), ('Wassim', 'wassimbel94@gmail.com'), ('Mael', 'mael.lacour@gadz.org'), ('Vincent', 'vtim@hotmail.fr')]
+ADMINS = []
 
 # Durée de validité du token reset password
 PASSWORD_RESET_TIMEOUT_DAYS = 1  # en jours
